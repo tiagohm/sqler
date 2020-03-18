@@ -20,24 +20,22 @@ class Where extends Equatable implements Expression {
     return Where(WherePart(column), 'IS NOT', WherePart.null_);
   }
 
+  factory Where._expr(left, String op, right) {
+    return Where(
+      left is String ? _WrappableWherePart(left) : WherePart(left),
+      op,
+      right is String ? _WrappableWherePart(right) : WherePart(right),
+    );
+  }
+
   factory Where.eq(left, right) {
-    return right == null
-        ? Where.isNull(left)
-        : Where(
-            left is String ? _WrappableWherePart(left) : WherePart(left),
-            '=',
-            right is String ? _WrappableWherePart(right) : WherePart(right),
-          );
+    return right == null ? Where.isNull(left) : Where._expr(left, '=', right);
   }
 
   factory Where.notEq(left, right) {
     return right == null
         ? Where.isNotNull(left)
-        : Where(
-            left is String ? _WrappableWherePart(left) : WherePart(left),
-            '!=',
-            right is String ? _WrappableWherePart(right) : WherePart(right),
-          );
+        : Where._expr(left, '!=', right);
   }
 
   factory Where.like(
@@ -104,6 +102,28 @@ class Where extends Equatable implements Expression {
     );
   }
 
+  factory Where.lt(left, right) {
+    return Where._expr(left, '<', right);
+  }
+
+  factory Where.le(left, right) {
+    return Where._expr(left, '<=', right);
+  }
+
+  factory Where.gt(left, right) {
+    return Where._expr(left, '>', right);
+  }
+
+  factory Where.ge(left, right) {
+    return Where._expr(left, '>=', right);
+  }
+
+  factory Where.not(Where where) {
+    return _NotWhere(where.left, where.op, where.right);
+  }
+
+  Where not() => _NotWhere(left, op, right);
+
   @override
   String toSql() {
     final sb = StringBuffer();
@@ -125,6 +145,19 @@ class Where extends Equatable implements Expression {
 
   @override
   List<Object> get props => [left, op, right];
+}
+
+class _NotWhere extends Where {
+  const _NotWhere(
+    Expression left,
+    String op,
+    Expression right,
+  ) : super(left, op, right);
+
+  @override
+  String toSql() {
+    return 'NOT (${super.toSql()})';
+  }
 }
 
 class WherePart extends Equatable implements Expression {

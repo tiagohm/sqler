@@ -167,6 +167,11 @@ void main() {
     expect(where.toSql(), "id BETWEEN 'a' AND 'z'");
   });
 
+  test('Between Column', () {
+    final where = Where.between(id, id, id);
+    expect(where.toSql(), 'id BETWEEN id AND id');
+  });
+
   test('Not Between Integer', () {
     final where = Where.notBetween(id, 0, 10);
     expect(where.toSql(), 'id NOT BETWEEN 0 AND 10');
@@ -175,5 +180,55 @@ void main() {
   test('Not Between String', () {
     final where = Where.notBetween(id, 'a', 'z');
     expect(where.toSql(), "id NOT BETWEEN 'a' AND 'z'");
+  });
+
+  test('Not Between Column', () {
+    final where = Where.notBetween(id, id, id);
+    expect(where.toSql(), 'id NOT BETWEEN id AND id');
+  });
+
+  test('Less Than Integer', () {
+    final where = Where.lt(id, 0);
+    expect(where.toSql(), 'id < 0');
+  });
+
+  test('Less Than String', () {
+    final where = Where.lt(id, 'a');
+    expect(where.toSql(), "id < 'a'");
+  });
+
+  test('Less Or Equal Integer', () {
+    final where = Where.le(id, 0);
+    expect(where.toSql(), 'id <= 0');
+  });
+
+  test('Less Or Equal String', () {
+    final where = Where.le(id, 'a');
+    expect(where.toSql(), "id <= 'a'");
+  });
+
+  test('Greater Than Integer', () {
+    final where = Where.gt(id, 0);
+    expect(where.toSql(), 'id > 0');
+  });
+
+  test('Greater Than String', () {
+    final where = Where.gt(id, 'a');
+    expect(where.toSql(), "id > 'a'");
+  });
+
+  test('Greater Or Equal Integer', () {
+    final where = Where.ge(id, 0);
+    expect(where.toSql(), 'id >= 0');
+  });
+
+  test('Greater Or Equal String', () {
+    final where = Where.ge(id, 'a');
+    expect(where.toSql(), "id >= 'a'");
+  });
+
+  test('Not', () {
+    final where = Where.notBetween(id, 0, 10).not();
+    expect(where.toSql(), 'NOT (id NOT BETWEEN 0 AND 10)');
   });
 }
