@@ -1,3 +1,4 @@
+import 'package:sqler/src/match_type.dart';
 import 'package:test/test.dart';
 
 import 'package:sqler/src/column.dart';

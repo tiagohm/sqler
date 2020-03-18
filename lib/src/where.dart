@@ -1,6 +1,7 @@
 import 'package:equatable/equatable.dart';
 import 'package:sqler/src/column.dart';
 import 'package:sqler/src/expression.dart';
+import 'package:sqler/src/match_type.dart';
 
 class Where extends Equatable implements Expression {
   final WherePart left;
@@ -17,29 +18,23 @@ class Where extends Equatable implements Expression {
     return Where(WherePart(column), 'IS NOT', WherePart.null_);
   }
 
-  factory Where.eq(
-    left,
-    right,
-  ) {
+  factory Where.eq(left, right) {
     return right == null
         ? Where.isNull(left)
         : Where(
-            left is String ? WherePart.wrap(left) : WherePart(left),
+            left is String ? _WrappableWherePart(left) : WherePart(left),
             '=',
-            right is String ? WherePart.wrap(right) : WherePart(right),
+            right is String ? _WrappableWherePart(right) : WherePart(right),
           );
   }
 
-  factory Where.notEq(
-    left,
-    right,
-  ) {
+  factory Where.notEq(left, right) {
     return right == null
         ? Where.isNotNull(left)
         : Where(
-            left is String ? WherePart.wrap(left) : WherePart(left),
+            left is String ? _WrappableWherePart(left) : WherePart(left),
             '!=',
-            right is String ? WherePart.wrap(right) : WherePart(right),
+            right is String ? _WrappableWherePart(right) : WherePart(right),
           );
   }
 
@@ -51,10 +46,22 @@ class Where extends Equatable implements Expression {
     assert(type != null);
 
     return Where(
-      left is String ? WherePart.wrap(left) : WherePart(left),
+      left is String ? _WrappableWherePart(left) : WherePart(left),
       'LIKE',
-      LikeWherePart(right, type),
+      _LikeWherePart(right, type),
     );
+  }
+
+  factory Where.likeStart(left, right) {
+    return Where.like(left, right, type: MatchType.start);
+  }
+
+  factory Where.likeEnd(left, right) {
+    return Where.like(left, right, type: MatchType.end);
+  }
+
+  factory Where.likeAnywhere(left, right) {
+    return Where.like(left, right, type: MatchType.anywhere);
   }
 
   @override
@@ -82,37 +89,38 @@ class Where extends Equatable implements Expression {
 
 class WherePart extends Equatable implements Expression {
   final dynamic value;
-  final bool wrappable;
 
   static const null_ = WherePart('NULL');
 
-  const WherePart(
-    this.value, {
-    this.wrappable = false,
-  });
-
-  const WherePart.wrap(this.value) : wrappable = true;
+  const WherePart(this.value);
 
   @override
   String toSql() {
-    final text = value is Column ? value.toSql() : value.toString();
-    return wrappable && value is String ? "'$text'" : text;
+    return value is Column ? value.toSql() : value.toString();
   }
 
   @override
-  List<Object> get props => [value, wrappable];
+  List<Object> get props => [value];
 }
 
-enum MatchType { exact, start, end, anywhere }
-
-class LikeWherePart extends WherePart {
-  final MatchType type;
-
-  const LikeWherePart(value, this.type) : super(value);
+class _WrappableWherePart extends WherePart {
+  const _WrappableWherePart(String value) : super(value);
 
   @override
   String toSql() {
-    final text = value is Column ? value.toSql() : value.toString();
+    final text = super.toSql();
+    return "'$text'";
+  }
+}
+
+class _LikeWherePart extends WherePart {
+  final MatchType type;
+
+  const _LikeWherePart(value, this.type) : super(value);
+
+  @override
+  String toSql() {
+    final text = super.toSql();
 
     final start = type == MatchType.end || type == MatchType.anywhere;
     final end = type == MatchType.start || type == MatchType.anywhere;
@@ -149,5 +157,5 @@ class LikeWherePart extends WherePart {
   }
 
   @override
-  List<Object> get props => [value, wrappable, type];
+  List<Object> get props => [value, type];
 }
