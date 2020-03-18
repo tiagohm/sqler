@@ -4,6 +4,7 @@ import 'package:test/test.dart';
 
 const user = Table('user');
 const userWithAlias = Table('user', alias: 'u');
+const age = Column.name('age');
 
 void main() {
   test('Name', () {
@@ -29,6 +30,21 @@ void main() {
   test('Name With Table Alias And Alias', () {
     const column = Column.name('id', table: userWithAlias, alias: 'uid');
     expect(column.toSql(), 'u.id AS uid');
+  });
+
+  test('Count', () {
+    final column = Column.count(alias: 'c');
+    expect(column.toSql(), 'COUNT(*) AS c');
+  });
+
+  test('Avg', () {
+    final column = Column.avg(age, alias: 'age');
+    expect(column.toSql(), 'AVG(age) AS age');
+  });
+
+  test('Sum', () {
+    final column = Column.sum(age, alias: 'age');
+    expect(column.toSql(), 'SUM(age) AS age');
   });
 
   test('SubSelect', () {

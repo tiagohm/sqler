@@ -34,15 +34,22 @@ class Column extends Equatable implements Expression {
         value = query,
         table = null;
 
+  factory Column.count({String alias}) =>
+      FunctionColumn('COUNT', all, alias: alias);
+
+  factory Column.avg(Column column, {String alias}) =>
+      FunctionColumn('AVG', column, alias: alias);
+
+  factory Column.sum(Column column, {String alias}) =>
+      FunctionColumn('SUM', column, alias: alias);
+
   @override
   String toSql() {
     final sb = StringBuffer();
 
     if (table != null) {
-      sb.write('${table.alias ?? table.name}.');
-    }
-
-    if (value is String) {
+      sb.write('${table.alias ?? table.name}.$value');
+    } else if (value is String) {
       sb.write(value);
     } else if (value is Query) {
       sb.write('(');
@@ -57,19 +64,33 @@ class Column extends Equatable implements Expression {
     return sb.toString();
   }
 
-  Column copyWith({
-    String column,
-    Query query,
-    Table table,
+  @override
+  List<Object> get props => [value, table, alias];
+}
+
+class FunctionColumn extends Column {
+  final String function;
+  final Column column;
+
+  FunctionColumn(
+    this.function,
+    this.column, {
     String alias,
-  }) {
-    return Column(
-      query ?? column ?? value,
-      table: query == null ? table : null,
-      alias: alias,
-    );
+  }) : super(column.value, table: column.table, alias: alias);
+
+  @override
+  String toSql() {
+    final sb = StringBuffer();
+
+    sb.write('$function(${column.toSql()})');
+
+    if (alias != null && alias.isNotEmpty) {
+      sb.write(' AS $alias');
+    }
+
+    return sb.toString();
   }
 
   @override
-  List<Object> get props => [value, table, alias];
+  List<Object> get props => [function, column, alias];
 }
