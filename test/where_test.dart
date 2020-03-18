@@ -136,4 +136,44 @@ void main() {
     final where = Where.like(id, id, type: MatchType.anywhere);
     expect(where.toSql(), "id LIKE '%' || id || '%'");
   });
+
+  test('In Integer List', () {
+    final where = Where.in_(id, [1, 2, 3]);
+    expect(where.toSql(), 'id IN (1,2,3)');
+  });
+
+  test('In String List', () {
+    final where = Where.in_(id, ['1', '2', '3']);
+    expect(where.toSql(), "id IN ('1','2','3')");
+  });
+
+  test('Not In Integer List', () {
+    final where = Where.notIn(id, [1, 2, 3]);
+    expect(where.toSql(), 'id NOT IN (1,2,3)');
+  });
+
+  test('Not In String List', () {
+    final where = Where.notIn(id, ['1', '2', '3']);
+    expect(where.toSql(), "id NOT IN ('1','2','3')");
+  });
+
+  test('Between Integer', () {
+    final where = Where.between(id, 0, 10);
+    expect(where.toSql(), 'id BETWEEN 0 AND 10');
+  });
+
+  test('Between String', () {
+    final where = Where.between(id, 'a', 'z');
+    expect(where.toSql(), "id BETWEEN 'a' AND 'z'");
+  });
+
+  test('Not Between Integer', () {
+    final where = Where.notBetween(id, 0, 10);
+    expect(where.toSql(), 'id NOT BETWEEN 0 AND 10');
+  });
+
+  test('Not Between String', () {
+    final where = Where.notBetween(id, 'a', 'z');
+    expect(where.toSql(), "id NOT BETWEEN 'a' AND 'z'");
+  });
 }

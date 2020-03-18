@@ -3,10 +3,12 @@ import 'package:sqler/src/column.dart';
 import 'package:sqler/src/expression.dart';
 import 'package:sqler/src/match_type.dart';
 
+import 'query.dart';
+
 class Where extends Equatable implements Expression {
-  final WherePart left;
+  final Expression left;
   final String op;
-  final WherePart right;
+  final Expression right;
 
   const Where(this.left, this.op, this.right);
 
@@ -64,6 +66,44 @@ class Where extends Equatable implements Expression {
     return Where.like(left, right, type: MatchType.anywhere);
   }
 
+  factory Where.in_(left, right) {
+    return Where(
+      left is String ? _WrappableWherePart(left) : WherePart(left),
+      'IN',
+      _InWherePart(right),
+    );
+  }
+
+  factory Where.notIn(left, right) {
+    return Where(
+      left is String ? _WrappableWherePart(left) : WherePart(left),
+      'NOT IN',
+      _InWherePart(right),
+    );
+  }
+
+  factory Where.between(left, a, b) {
+    return Where(
+      left is String ? _WrappableWherePart(left) : WherePart(left),
+      'BETWEEN',
+      _BetweenWherePart(
+        a is String ? _WrappableWherePart(a) : WherePart(a),
+        b is String ? _WrappableWherePart(b) : WherePart(b),
+      ),
+    );
+  }
+
+  factory Where.notBetween(left, a, b) {
+    return Where(
+      left is String ? _WrappableWherePart(left) : WherePart(left),
+      'NOT BETWEEN',
+      _BetweenWherePart(
+        a is String ? _WrappableWherePart(a) : WherePart(a),
+        b is String ? _WrappableWherePart(b) : WherePart(b),
+      ),
+    );
+  }
+
   @override
   String toSql() {
     final sb = StringBuffer();
@@ -109,7 +149,7 @@ class _WrappableWherePart extends WherePart {
   @override
   String toSql() {
     final text = super.toSql();
-    return "'$text'";
+    return "'$text'"; // TODO: ESCAPE.
   }
 }
 
@@ -144,7 +184,7 @@ class _LikeWherePart extends WherePart {
         sb.write('%');
       }
 
-      sb.write(value);
+      sb.write(value); // TODO: ESCAPE.
 
       if (end) {
         sb.write('%');
@@ -158,4 +198,60 @@ class _LikeWherePart extends WherePart {
 
   @override
   List<Object> get props => [value, type];
+}
+
+class _InWherePart extends WherePart {
+  const _InWherePart(value) : super(value);
+
+  @override
+  String toSql() {
+    String text;
+
+    if (value is Query) {
+      text = value.toSql();
+    } else if (value is List) {
+      text = _enhancedJoin(value);
+    } else if (value is String) {
+      text = "'$value'"; // TODO: ESCAPE.
+    } else if (value is num || value is bool) {
+      text = value.toString();
+    } else {
+      throw ArgumentError('Unsupported type: ${text?.runtimeType}');
+    }
+
+    return '($text)';
+  }
+}
+
+class _BetweenWherePart extends Equatable implements Expression {
+  final Expression a;
+  final Expression b;
+
+  const _BetweenWherePart(this.a, this.b);
+
+  @override
+  String toSql() {
+    return '${a.toSql()} AND ${b.toSql()}';
+  }
+
+  @override
+  List<Object> get props => [a, b];
+}
+
+String _enhancedJoin(List data) {
+  final sb = StringBuffer();
+
+  for (var i = 0; i < data.length; i++) {
+    if (i > 0) {
+      sb.write(',');
+    }
+
+    if (data[i] is String) {
+      sb.write("'${data[i]}'"); // TODO: ESCAPE.
+    } else {
+      sb.write(data[i]);
+    }
+  }
+
+  return sb.toString();
 }
