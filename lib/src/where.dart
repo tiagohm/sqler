@@ -2,8 +2,7 @@ import 'package:equatable/equatable.dart';
 import 'package:sqler/src/column.dart';
 import 'package:sqler/src/expression.dart';
 import 'package:sqler/src/match_type.dart';
-
-import 'query.dart';
+import 'package:sqler/src/query.dart';
 
 class Where extends Equatable implements Expression {
   final Expression left;

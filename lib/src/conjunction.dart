@@ -1,6 +1,8 @@
+import 'package:equatable/equatable.dart';
+
 import 'expression.dart';
 
-class Conjunction implements Expression {
+class Conjunction extends Equatable implements Expression {
   final List<Expression> parts;
 
   const Conjunction(this.parts);
@@ -19,4 +21,7 @@ class Conjunction implements Expression {
 
     return sb.toString();
   }
+
+  @override
+  List<Object> get props => [parts];
 }

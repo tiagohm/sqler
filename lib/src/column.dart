@@ -1,12 +1,14 @@
+import 'package:equatable/equatable.dart';
 import 'package:sqler/src/expression.dart';
 import 'package:sqler/src/query.dart';
+import 'package:sqler/src/table.dart';
 
 // ignore_for_file: prefer_is_empty
 // ignore_for_file: prefer_initializing_formals
 
-class Column implements Expression {
+class Column extends Equatable implements Expression {
   final dynamic value;
-  final String table;
+  final Table table;
   final String alias;
 
   const Column(
@@ -36,8 +38,8 @@ class Column implements Expression {
   String toSql() {
     final sb = StringBuffer();
 
-    if (table != null && table.isNotEmpty) {
-      sb.write('$table.');
+    if (table != null) {
+      sb.write('${table.alias ?? table.name}.');
     }
 
     if (value is String) {
@@ -58,7 +60,7 @@ class Column implements Expression {
   Column copyWith({
     String column,
     Query query,
-    String table,
+    Table table,
     String alias,
   }) {
     return Column(
@@ -67,4 +69,7 @@ class Column implements Expression {
       alias: alias,
     );
   }
+
+  @override
+  List<Object> get props => [value, table, alias];
 }

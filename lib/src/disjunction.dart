@@ -1,6 +1,8 @@
+import 'package:equatable/equatable.dart';
+
 import 'expression.dart';
 
-class Disjunction implements Expression {
+class Disjunction extends Equatable implements Expression {
   final List<Expression> parts;
 
   const Disjunction(this.parts);
@@ -19,4 +21,7 @@ class Disjunction implements Expression {
 
     return sb.toString();
   }
+
+  @override
+  List<Object> get props => [parts];
 }
