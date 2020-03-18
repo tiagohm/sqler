@@ -1,9 +1,12 @@
 import 'package:sqler/src/column.dart';
 import 'package:sqler/src/match_type.dart';
+import 'package:sqler/src/table.dart';
 import 'package:sqler/src/where.dart';
 import 'package:test/test.dart';
 
+const user = Table('user');
 const id = Column.name('id');
+const userId = Column.name('id', table: user);
 
 void main() {
   test('Is Null', () {
@@ -229,5 +232,10 @@ void main() {
   test('Not', () {
     final where = Where.notBetween(id, 0, 10).not();
     expect(where.toSql(), 'NOT (id NOT BETWEEN 0 AND 10)');
+  });
+
+  test('Column With Table', () {
+    final where = Where.eq(userId, 8);
+    expect(where.toSql(), 'user.id = 8');
   });
 }
