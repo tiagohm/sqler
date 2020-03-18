@@ -12,17 +12,23 @@ const age = Column('age');
 const id = Column('id');
 
 void main() {
-  test('Fetch All', () {
+  test('Simple', () {
     const q = Query(user);
     expect(q.toSql(), 'SELECT * FROM user AS u');
   });
 
-  test('Fetch With Where', () {
+  test('Where', () {
     final q = Query(user, where: [Where.eq(name, 'tiagohm')]);
     expect(q.toSql(), "SELECT * FROM user AS u WHERE (name = 'tiagohm')");
   });
 
-  test('Fetch With Order By', () {
+  test('Having', () {
+    final count = Column.count(alias: 'c');
+    final q = Query(user, having: Where.eq(count, 1));
+    expect(q.toSql(), 'SELECT * FROM user AS u HAVING c = 1');
+  });
+
+  test('Order By', () {
     final q = Query(
       user,
       where: [Where.eq(name, 'tiagohm')],
@@ -33,7 +39,7 @@ void main() {
         "SELECT * FROM user AS u WHERE (name = 'tiagohm') ORDER BY name ASC");
   });
 
-  test('Fetch With Limit', () {
+  test('Limit', () {
     final q = Query(
       user,
       where: [Where.eq(name, 'tiagohm')],

@@ -11,6 +11,7 @@ class Query extends Equatable implements Expression {
   final Table from;
   final List<Column> columns;
   final List<Where> where;
+  final Where having;
   final List<OrderBy> orderBy;
   final Limit limit;
 
@@ -18,6 +19,7 @@ class Query extends Equatable implements Expression {
     this.from, {
     this.columns = const [],
     this.where = const [],
+    this.having,
     this.orderBy = const [],
     this.limit,
   });
@@ -36,10 +38,13 @@ class Query extends Equatable implements Expression {
 
     sb.write(' FROM ${from.toSql()}');
 
-    // Conjunction.
     if (where != null && where.isNotEmpty) {
       final c = Conjunction(where);
       sb.write(' WHERE ${c.toSql()}');
+    }
+
+    if (having != null) {
+      sb.write(' HAVING ${having.toSql()}');
     }
 
     if (orderBy != null && orderBy.isNotEmpty) {

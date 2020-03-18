@@ -34,14 +34,70 @@ class Column extends Equatable implements Expression {
         value = query,
         table = null;
 
-  factory Column.count({String alias}) =>
-      FunctionColumn('COUNT', all, alias: alias);
+  factory Column.count({
+    Column column = all,
+    bool distinct = false,
+    String alias,
+  }) {
+    return FunctionColumn(
+      'COUNT',
+      column,
+      clause: distinct ? 'DISTINCT' : null,
+      alias: alias,
+    );
+  }
 
-  factory Column.avg(Column column, {String alias}) =>
-      FunctionColumn('AVG', column, alias: alias);
+  factory Column.avg(
+    Column column, {
+    bool distinct = false,
+    String alias,
+  }) {
+    return FunctionColumn(
+      'AVG',
+      column,
+      clause: distinct ? 'DISTINCT' : null,
+      alias: alias,
+    );
+  }
 
-  factory Column.sum(Column column, {String alias}) =>
-      FunctionColumn('SUM', column, alias: alias);
+  factory Column.sum(
+    Column column, {
+    bool distinct = false,
+    String alias,
+  }) {
+    return FunctionColumn(
+      'SUM',
+      column,
+      clause: distinct ? 'DISTINCT' : null,
+      alias: alias,
+    );
+  }
+
+  factory Column.max(
+    Column column, {
+    bool distinct = false,
+    String alias,
+  }) {
+    return FunctionColumn(
+      'MAX',
+      column,
+      clause: distinct ? 'DISTINCT' : null,
+      alias: alias,
+    );
+  }
+
+  factory Column.min(
+    Column column, {
+    bool distinct = false,
+    String alias,
+  }) {
+    return FunctionColumn(
+      'MIN',
+      column,
+      clause: distinct ? 'DISTINCT' : null,
+      alias: alias,
+    );
+  }
 
   @override
   String toSql() {
@@ -70,11 +126,13 @@ class Column extends Equatable implements Expression {
 
 class FunctionColumn extends Column {
   final String function;
+  final String clause;
   final Column column;
 
   FunctionColumn(
     this.function,
     this.column, {
+    this.clause,
     String alias,
   }) : super(column.value, table: column.table, alias: alias);
 
@@ -82,7 +140,15 @@ class FunctionColumn extends Column {
   String toSql() {
     final sb = StringBuffer();
 
-    sb.write('$function(${column.toSql()})');
+    sb.write('$function(');
+
+    if (clause != null && clause.isNotEmpty) {
+      sb.write('$clause ');
+    }
+
+    sb.write(column.toSql());
+
+    sb.write(')');
 
     if (alias != null && alias.isNotEmpty) {
       sb.write(' AS $alias');

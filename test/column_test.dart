@@ -42,9 +42,24 @@ void main() {
     expect(column.toSql(), 'AVG(age) AS age');
   });
 
+  test('Avg With Distinct', () {
+    final column = Column.avg(age, distinct: true, alias: 'age');
+    expect(column.toSql(), 'AVG(DISTINCT age) AS age');
+  });
+
   test('Sum', () {
     final column = Column.sum(age, alias: 'age');
     expect(column.toSql(), 'SUM(age) AS age');
+  });
+
+  test('Min', () {
+    final column = Column.min(age, alias: 'age');
+    expect(column.toSql(), 'MIN(age) AS age');
+  });
+
+  test('Max', () {
+    final column = Column.max(age, alias: 'age');
+    expect(column.toSql(), 'MAX(age) AS age');
   });
 
   test('SubSelect', () {
