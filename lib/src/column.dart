@@ -9,13 +9,13 @@ class Column implements Expression {
   final String table;
   final String alias;
 
-  const Column._(
+  const Column(
     this.value, {
     this.table,
     this.alias,
   });
 
-  static const all = Column._('*');
+  static const all = Column('*');
 
   const Column.name(
     String column, {
@@ -61,7 +61,7 @@ class Column implements Expression {
     String table,
     String alias,
   }) {
-    return Column._(
+    return Column(
       query ?? column ?? value,
       table: query == null ? table : null,
       alias: alias,
