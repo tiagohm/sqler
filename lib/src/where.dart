@@ -20,7 +20,7 @@ class Where extends Equatable implements Expression {
     return Where(WherePart(column), 'IS NOT', WherePart.null_);
   }
 
-  factory Where._expr(left, String op, right) {
+  factory Where._op(left, String op, right) {
     return Where(
       left is String ? _WrappableWherePart(left) : WherePart(left),
       op,
@@ -29,13 +29,11 @@ class Where extends Equatable implements Expression {
   }
 
   factory Where.eq(left, right) {
-    return right == null ? Where.isNull(left) : Where._expr(left, '=', right);
+    return right == null ? Where.isNull(left) : Where._op(left, '=', right);
   }
 
   factory Where.notEq(left, right) {
-    return right == null
-        ? Where.isNotNull(left)
-        : Where._expr(left, '!=', right);
+    return right == null ? Where.isNotNull(left) : Where._op(left, '!=', right);
   }
 
   factory Where.like(
@@ -103,19 +101,19 @@ class Where extends Equatable implements Expression {
   }
 
   factory Where.lt(left, right) {
-    return Where._expr(left, '<', right);
+    return Where._op(left, '<', right);
   }
 
   factory Where.le(left, right) {
-    return Where._expr(left, '<=', right);
+    return Where._op(left, '<=', right);
   }
 
   factory Where.gt(left, right) {
-    return Where._expr(left, '>', right);
+    return Where._op(left, '>', right);
   }
 
   factory Where.ge(left, right) {
-    return Where._expr(left, '>=', right);
+    return Where._op(left, '>=', right);
   }
 
   factory Where.not(Where where) {
