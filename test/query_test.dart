@@ -1,4 +1,5 @@
 import 'package:sqler/src/column.dart';
+import 'package:sqler/src/join.dart';
 import 'package:sqler/src/limit.dart';
 import 'package:sqler/src/order_by.dart';
 import 'package:sqler/src/query.dart';
@@ -7,14 +8,24 @@ import 'package:sqler/src/where.dart';
 import 'package:test/test.dart';
 
 const user = Table('user', alias: 'u');
+const address = Table('address', alias: 'addr');
 const name = Column('name');
 const age = Column('age');
 const id = Column('id');
+const userAddress = Column('address', table: user);
+const addrId = Column('id', table: address);
 
 void main() {
   test('Simple', () {
     const q = Query(user);
     expect(q.sql(), 'SELECT * FROM user AS u');
+  });
+
+  test('Join', () {
+    final where0 = Where.eq(userAddress, addrId);
+    final join = Join.left(address, [where0]);
+    final q = Query(user, join: [join], where: [Where.eq(name, 'tiagohm')]);
+    expect(q.sql(), "SELECT * FROM user AS u LEFT JOIN address AS addr ON (u.address = addr.id) WHERE (name = 'tiagohm')");
   });
 
   test('Where', () {

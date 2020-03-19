@@ -2,6 +2,7 @@ import 'package:equatable/equatable.dart';
 import 'package:sqler/src/column.dart';
 import 'package:sqler/src/conjunction.dart';
 import 'package:sqler/src/expression.dart';
+import 'package:sqler/src/join.dart';
 import 'package:sqler/src/limit.dart';
 import 'package:sqler/src/order_by.dart';
 import 'package:sqler/src/table.dart';
@@ -10,6 +11,7 @@ import 'package:sqler/src/where.dart';
 class Query extends Equatable implements Expression {
   final Table from;
   final List<Column> columns;
+  final List<Join> join;
   final List<Where> where;
   final Where having;
   final List<OrderBy> orderBy;
@@ -18,6 +20,7 @@ class Query extends Equatable implements Expression {
   const Query(
     this.from, {
     this.columns = const [],
+    this.join = const [],
     this.where = const [],
     this.having,
     this.orderBy = const [],
@@ -36,6 +39,18 @@ class Query extends Equatable implements Expression {
     }
 
     sb.write(' FROM ${from.sql()}');
+
+    if (join != null && join.isNotEmpty) {
+      sb.write(' ');
+
+      for (var i = 0; i < join.length; i++) {
+        if (i > 0) {
+          sb.write(' ');
+        }
+
+        sb.write(join[i].sql());
+      }
+    }
 
     if (where != null && where.isNotEmpty) {
       final c = Conjunction(where);
