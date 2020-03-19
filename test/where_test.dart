@@ -238,4 +238,20 @@ void main() {
     final where = Where.eq(userId, 8);
     expect(where.sql(), 'user.id = 8');
   });
+
+  test('Conjunction', () {
+    final where = Where.eq(userId, 8) & Where.eq(userId, 9);
+    expect(where.sql(), '(user.id = 8) AND (user.id = 9)');
+  });
+
+  test('Disjunction', () {
+    final where = Where.eq(userId, 8) | Where.eq(userId, 9);
+    expect(where.sql(), '(user.id = 8) OR (user.id = 9)');
+  });
+
+  test('Conjunction & Disjunction', () {
+    final where =
+        (Where.ge(userId, 1) & Where.le(userId, 6)) | Where.eq(userId, 9);
+    expect(where.sql(), '((user.id >= 1) AND (user.id <= 6)) OR (user.id = 9)');
+  });
 }

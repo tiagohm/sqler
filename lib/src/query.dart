@@ -12,7 +12,7 @@ class Query extends Equatable implements Expression {
   final Table from;
   final List<Column> columns;
   final List<Join> join;
-  final List<Where> where;
+  final List<Expression> where;
   final Where having;
   final List<OrderBy> orderBy;
   final Limit limit;
@@ -35,7 +35,13 @@ class Query extends Equatable implements Expression {
     if (columns == null || columns.isEmpty) {
       sb.write('*');
     } else {
-      sb.write(columns.join(','));
+      for (var i = 0; i < columns.length; i++) {
+        if (i > 0) {
+          sb.write(', ');
+        }
+
+        sb.write(columns[i].sql());
+      }
     }
 
     sb.write(' FROM ${from.sql()}');

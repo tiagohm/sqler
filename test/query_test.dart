@@ -23,9 +23,10 @@ void main() {
 
   test('Join', () {
     final where0 = Where.eq(userAddress, addrId);
-    final join = Join.left(address, [where0]);
+    final join = Join.left(address, on: [where0]);
     final q = Query(user, join: [join], where: [Where.eq(name, 'tiagohm')]);
-    expect(q.sql(), "SELECT * FROM user AS u LEFT JOIN address AS addr ON (u.address = addr.id) WHERE (name = 'tiagohm')");
+    expect(q.sql(),
+        "SELECT * FROM user AS u LEFT JOIN address AS addr ON (u.address = addr.id) WHERE (name = 'tiagohm')");
   });
 
   test('Where', () {

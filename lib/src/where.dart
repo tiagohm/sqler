@@ -1,5 +1,7 @@
 import 'package:equatable/equatable.dart';
 import 'package:sqler/src/column.dart';
+import 'package:sqler/src/conjunction.dart';
+import 'package:sqler/src/disjunction.dart';
 import 'package:sqler/src/expression.dart';
 import 'package:sqler/src/literal.dart';
 import 'package:sqler/src/match_type.dart';
@@ -84,6 +86,14 @@ class Where extends Equatable implements Expression {
   }
 
   Where not() => _NotWhere(left, op, right);
+
+  Conjunction operator &(Where other) {
+    return Conjunction([this, other]);
+  }
+
+  Disjunction operator |(Where other) {
+    return Disjunction([this, other]);
+  }
 
   String sql({
     bool having = false,

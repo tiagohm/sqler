@@ -8,50 +8,50 @@ import 'package:sqler/src/where.dart';
 class Join extends Equatable implements Expression {
   final String op;
   final dynamic table;
-  final List<Where> where;
+  final List<Where> on;
   final String alias;
 
   const Join(
     this.op,
-    this.table,
-    this.where, {
+    this.table, {
+    this.on,
     this.alias,
   });
 
   const Join.left(
-    this.table,
-    this.where, {
+    this.table, {
+    this.on,
     this.alias,
   }) : op = 'LEFT';
 
   const Join.right(
-    this.table,
-    this.where, {
+    this.table, {
+    this.on,
     this.alias,
   }) : op = 'RIGHT';
 
   const Join.inner(
-    this.table,
-    this.where, {
+    this.table, {
+    this.on,
     this.alias,
   }) : op = 'INNER';
 
   const Join.full(
-    this.table,
-    this.where, {
+    this.table, {
+    this.on,
     this.alias,
   }) : op = 'FULL';
 
   const Join.cross(
-    this.table,
-    this.where, {
+    this.table, {
+    this.on,
     this.alias,
   }) : op = 'CROSS';
 
   String sql() {
     final sb = StringBuffer();
     final table = this.table;
-    final where = this.where;
+    final on = this.on;
 
     if (op != null) {
       sb.write(op);
@@ -71,8 +71,8 @@ class Join extends Equatable implements Expression {
       throw ArgumentError('Unsupported type: ${table.runtimeType}');
     }
 
-    if (where != null && where.isNotEmpty) {
-      final c = Conjunction(where);
+    if (on != null && on.isNotEmpty) {
+      final c = Conjunction(on);
       sb.write(' ON ${c.sql()}');
     }
 
@@ -80,5 +80,5 @@ class Join extends Equatable implements Expression {
   }
 
   @override
-  List<Object> get props => [op, table, where];
+  List<Object> get props => [op, table, on];
 }
