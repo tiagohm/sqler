@@ -5,34 +5,36 @@ import 'expression.dart';
 
 enum OrderType { asc, desc }
 
+enum NullOrderType { first, last }
+
 class OrderBy extends Equatable implements Expression {
   final Column column;
   final OrderType order;
-  final bool nullFirst;
+  final NullOrderType nullOrder;
 
   const OrderBy(
     this.column, {
     this.order = OrderType.asc,
-    this.nullFirst,
+    this.nullOrder,
   }) : assert(column != null);
 
-  @override
-  String toSql() {
+  String sql() {
     final sb = StringBuffer();
 
-    sb.write(column.toSql());
+    sb.write(column.nameOrAlias());
 
     if (order != null) {
-      sb.write(order == OrderType.asc ? ' ASC' : ' DESC');
+      sb.write(order == OrderType.desc ? ' DESC' : ' ASC');
     }
 
-    if (nullFirst != null) {
-      sb.write(nullFirst ? ' NULLS FIRST' : ' NULLS LAST');
+    if (nullOrder != null) {
+      sb.write(' NULLS ');
+      sb.write(nullOrder == NullOrderType.first ? 'FIRST' : 'LAST');
     }
 
     return sb.toString();
   }
 
   @override
-  List<Object> get props => [column, order, nullFirst];
+  List<Object> get props => [column, order, nullOrder];
 }

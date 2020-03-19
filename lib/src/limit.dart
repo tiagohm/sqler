@@ -23,8 +23,7 @@ class Limit extends Equatable implements Expression {
       : assert(offset != null && offset > 0),
         limit = -1;
 
-  @override
-  String toSql() {
+  String sql() {
     final sb = StringBuffer();
 
     sb.write('LIMIT $limit');

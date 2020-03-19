@@ -4,23 +4,23 @@ import 'package:sqler/src/disjunction.dart';
 import 'package:sqler/src/where.dart';
 import 'package:test/test.dart';
 
-const score = Column.name('score');
-const name = Column.name('name');
-const age = Column.name('age');
+const score = Column('score');
+const name = Column('name');
+const age = Column('age');
 
 void main() {
   test('Conjunction', () {
     final where0 = Where.gt(score, 10);
     final where1 = Where.eq(name, 'tiagohm');
     final c = Conjunction([where0, where1]);
-    expect(c.toSql(), "(score > 10) AND (name = 'tiagohm')");
+    expect(c.sql(), "(score > 10) AND (name = 'tiagohm')");
   });
 
   test('Disjunction', () {
     final where0 = Where.gt(score, 10);
     final where1 = Where.eq(name, 'tiagohm');
     final c = Disjunction([where0, where1]);
-    expect(c.toSql(), "(score > 10) OR (name = 'tiagohm')");
+    expect(c.sql(), "(score > 10) OR (name = 'tiagohm')");
   });
 
   test('Conjunction & Disjunction', () {
@@ -33,7 +33,7 @@ void main() {
       Disjunction([where1, where2]),
     ]);
 
-    expect(d.toSql(),
+    expect(d.sql(),
         "(score > 10) AND ((name = 'tiagohm') OR (age BETWEEN 10 AND 26))");
   });
 }

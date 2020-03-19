@@ -1,14 +1,15 @@
 import 'package:equatable/equatable.dart';
+import 'package:sqler/src/conjunction.dart';
+import 'package:sqler/src/where.dart';
 
 import 'expression.dart';
 
 class Disjunction extends Equatable implements Expression {
-  final List<Expression> parts;
+  final List<Where> parts;
 
   const Disjunction(this.parts);
 
-  @override
-  String toSql() {
+  String sql() {
     final sb = StringBuffer();
 
     for (var i = 0; i < parts.length; i++) {
@@ -16,7 +17,11 @@ class Disjunction extends Equatable implements Expression {
         sb.write(' OR ');
       }
 
-      sb.write('(${parts[i].toSql()})');
+      final dynamic part = parts[i];
+
+      if (part is Conjunction || part is Disjunction || part is Where) {
+        sb.write('(${part.sql()})');
+      }
     }
 
     return sb.toString();

@@ -1,3 +1,1 @@
-abstract class Expression {
-  String toSql();
-}
+abstract class Expression {}

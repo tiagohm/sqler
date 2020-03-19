@@ -14,18 +14,18 @@ const id = Column('id');
 void main() {
   test('Simple', () {
     const q = Query(user);
-    expect(q.toSql(), 'SELECT * FROM user AS u');
+    expect(q.sql(), 'SELECT * FROM user AS u');
   });
 
   test('Where', () {
     final q = Query(user, where: [Where.eq(name, 'tiagohm')]);
-    expect(q.toSql(), "SELECT * FROM user AS u WHERE (name = 'tiagohm')");
+    expect(q.sql(), "SELECT * FROM user AS u WHERE (name = 'tiagohm')");
   });
 
   test('Having', () {
     final count = Column.count(alias: 'c');
     final q = Query(user, having: Where.eq(count, 1));
-    expect(q.toSql(), 'SELECT * FROM user AS u HAVING c = 1');
+    expect(q.sql(), 'SELECT * FROM user AS u HAVING c = 1');
   });
 
   test('Order By', () {
@@ -35,7 +35,7 @@ void main() {
       orderBy: const [OrderBy(name)],
     );
 
-    expect(q.toSql(),
+    expect(q.sql(),
         "SELECT * FROM user AS u WHERE (name = 'tiagohm') ORDER BY name ASC");
   });
 
@@ -47,6 +47,6 @@ void main() {
     );
 
     expect(
-        q.toSql(), "SELECT * FROM user AS u WHERE (name = 'tiagohm') LIMIT 10");
+        q.sql(), "SELECT * FROM user AS u WHERE (name = 'tiagohm') LIMIT 10");
   });
 }

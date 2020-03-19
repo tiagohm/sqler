@@ -24,8 +24,7 @@ class Query extends Equatable implements Expression {
     this.limit,
   });
 
-  @override
-  String toSql() {
+  String sql() {
     final sb = StringBuffer();
 
     sb.write('SELECT ');
@@ -36,15 +35,15 @@ class Query extends Equatable implements Expression {
       sb.write(columns.join(','));
     }
 
-    sb.write(' FROM ${from.toSql()}');
+    sb.write(' FROM ${from.sql()}');
 
     if (where != null && where.isNotEmpty) {
       final c = Conjunction(where);
-      sb.write(' WHERE ${c.toSql()}');
+      sb.write(' WHERE ${c.sql()}');
     }
 
     if (having != null) {
-      sb.write(' HAVING ${having.toSql()}');
+      sb.write(' HAVING ${having.sql(having: true)}');
     }
 
     if (orderBy != null && orderBy.isNotEmpty) {
@@ -55,13 +54,13 @@ class Query extends Equatable implements Expression {
           sb.write(',');
         }
 
-        sb.write(orderBy[i].toSql());
+        sb.write(orderBy[i].sql());
       }
     }
 
     if (limit != null) {
       sb.write(' ');
-      sb.write(limit.toSql());
+      sb.write(limit.sql());
     }
 
     return sb.toString();
