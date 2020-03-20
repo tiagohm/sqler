@@ -159,7 +159,7 @@ class _Like extends Equatable {
       }
 
       if (value is String) {
-        sb.write(value); // TODO: ESCAPE.
+        sb.write(_escapeString(value));
       } else {
         sb.write(_sql(value));
       }
@@ -220,7 +220,7 @@ String _sql(
   } else if (e is bool) {
     return e.toString().toUpperCase();
   } else if (e is String) {
-    return "'$e'";
+    return "'${_escapeString(e)}'";
   } else if (e is List) {
     return _enhancedJoin(e);
   } else if (e is _In || e is _Between || e is _Like) {
@@ -228,6 +228,26 @@ String _sql(
   } else {
     throw ArgumentError('Unsupported type: ${e.runtimeType}');
   }
+}
+
+String _escapeString(String text) {
+  if (text == null || text.isEmpty) {
+    return text;
+  }
+
+  final sb = StringBuffer();
+
+  for (var i = 0; i < text.length; i++) {
+    final c = text[i];
+
+    if (c == "'") {
+      sb.write("''");
+    } else {
+      sb.write(c);
+    }
+  }
+
+  return sb.toString();
 }
 
 String _enhancedJoin(List data) {
@@ -239,7 +259,7 @@ String _enhancedJoin(List data) {
     }
 
     if (data[i] is String) {
-      sb.write("'${data[i]}'"); // TODO: ESCAPE.
+      sb.write("'${_escapeString(data[i])}'");
     } else {
       sb.write(data[i]);
     }

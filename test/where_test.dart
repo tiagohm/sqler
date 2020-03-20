@@ -20,8 +20,8 @@ void main() {
   });
 
   test('Equal String', () {
-    final where = Where.eq(id, 'tiagohm');
-    expect(where.sql(), "id = 'tiagohm'");
+    final where = Where.eq(id, 'tiago\'hm');
+    expect(where.sql(), "id = 'tiago''hm'");
   });
 
   test('Equal Number', () {
