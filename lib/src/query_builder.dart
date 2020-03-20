@@ -26,6 +26,10 @@ class QueryBuilder {
     _columns.add(column);
   }
 
+  void columns(List<Column> columns) {
+    _columns.addAll(columns);
+  }
+
   void leftJoin(
     table, {
     List<Where> on,
