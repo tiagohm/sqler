@@ -24,14 +24,14 @@ void main() {
     expect(where.sql(), "id = 'tiagohm'");
   });
 
-  test('Equal Boolean', () {
-    final where = Where.eq(id, true);
-    expect(where.sql(), 'id = true');
-  });
-
   test('Equal Number', () {
     final where = Where.eq(id, 8);
     expect(where.sql(), 'id = 8');
+  });
+
+  test('Equal Boolean', () {
+    final where = Where.eq(id, true);
+    expect(where.sql(), 'id = TRUE');
   });
 
   test('Equal Null', () {
@@ -46,7 +46,7 @@ void main() {
 
   test('Not Equal Boolean', () {
     final where = Where.notEq(id, true);
-    expect(where.sql(), 'id != true');
+    expect(where.sql(), 'id != TRUE');
   });
 
   test('Not Equal Number', () {

@@ -215,8 +215,10 @@ String _sql(
     return having ? e.nameOrAlias() : e.sql();
   } else if (e is Literal) {
     return e.sql();
-  } else if (e is num || e is bool) {
+  } else if (e is num) {
     return e.toString();
+  } else if (e is bool) {
+    return e.toString().toUpperCase();
   } else if (e is String) {
     return "'$e'";
   } else if (e is List) {
