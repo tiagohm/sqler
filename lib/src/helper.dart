@@ -75,6 +75,10 @@ Column total(
 
 // Where.
 
+Where isNull(left) => Where.isNull(left);
+
+Where isNotNull(left) => Where.isNotNull(left);
+
 Where eq(left, right) => Where.eq(left, right);
 
 Where ne(left, right) => Where.notEq(left, right);
